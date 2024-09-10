@@ -1,58 +1,68 @@
-# name: dev-prod-job
+name: dev-prod-job
 
-# on:
-#   push:
-#     branches: [ main ]
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+    branches: 
+      - dev
+      - main
   
-# jobs:
-#   experiment:
-#     runs-on: ubuntu-latest
-#     # needs: lint-and-test
-#     environment:
-#         name: dev
-#     steps:
-#     - name: Check out repo
-#       uses: actions/checkout@main
-#     - name: Use Python version 3.8
-#       uses: actions/setup-python@v3
-#       with:
-#         python-version: '3.8'
-#     - name: install pytest and requirements.txt
-#       run: |
-#         python -m pip install -r requirements.txt
-#     - name: unit test using pytest
-#       run: |
-#         pytest tests/
-#     - name: Install az ml extension
-#       run: az extension add -n ml -y
-#     - name: Azure login
-#       uses: azure/login@v1
-#       with:
-#         creds: ${{ secrets.AZURE_CREDENTIALS }}
-#     - name: Create dataset
-#       run: az ml data create --file dataset.yml --workspace-name dev-ml-fleet-adder-mlw --resource-group rg-d-race-ds
-#     - id: mljobid
-#       name: Run training job for dev
-#       run: |
-#         run_id=$(az ml job create --file src/job.yml --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw --query name -o tsv)
-#         echo "RUN_ID=$run_id" >> $GITHUB_ENV
-#     - name: Wait for job completion
-#       run: |
-#           status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw --query status -o tsv)
-#           while [ "$status" != "Completed" ]; do
-#             echo "Waiting for job to complete..."
-#             sleep 60
-#             status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw --query status -o tsv)
-#           done
-#           echo "Job completed."
-#     - name: register model in dev      
-#       run: |
-#         echo "runId :${{ env.RUN_ID }}"
-#         az ml model create --name sk-diabetes-model --type mlflow_model --path runs:/${{ env.RUN_ID }}/model  --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw
-#     # - name: create endpoint dev
-#     #   run:  |
-#     #     az ml online-endpoint create -f ./endpoint.yml --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw
-#     #     sleep 60
-#     # - name: deploy model to endpoint dev
-#     #   run:  az ml online-deployment create --name sklearn-deployment --endpoint diabetes-dev -f ./deployment.yml --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw --all-traffic
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    # needs: lint-and-test
+    environment:
+        name: dev
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@main
+    - name: Use Python version 3.8
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.8'
+    - name: install flake8
+      run: |
+        python -m pip install flake8
+    - name: lint code with flake8
+      run: |
+        flake8 code/model/train.py
+    - name: install pytest and requirements.txt
+      run: |
+        python -m pip install -r requirements.txt
+    - name: unit test using pytest
+      run: |
+        pytest tests/
+    - name: Install az ml extension
+      run: az extension add -n ml -y
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Create dataset
+      run: az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
+    - id: mljobid
+      name: Run training job for dev
+      run: |
+        run_id=$(az ml job create --file code/job.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
+        echo "RUN_ID=$run_id" >> $GITHUB_ENV
+    - name: Wait for job completion
+      run: |
+          status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
+          while [ "$status" != "Completed" ]; do
+            echo "Waiting for job to complete..."
+            sleep 60
+            status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
+          done
+          echo "Job completed."
+    - name: register model in dev      
+      run: |
+        echo "runId :${{ env.RUN_ID }}"
+        az ml model create --name sk-diabetes-model --type mlflow_model --path runs:/${{ env.RUN_ID }}/model  --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw
+    # - name: create endpoint dev
+    #   run:  |
+    #     az ml online-endpoint create -f ./endpoint.yml --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw
+    #     sleep 60
+    # - name: deploy model to endpoint dev
+    #   run:  az ml online-deployment create --name sklearn-deployment --endpoint diabetes-dev -f ./deployment.yml --resource-group rg-d-race-ds --workspace-name dev-ml-fleet-adder-mlw --all-traffic
   
