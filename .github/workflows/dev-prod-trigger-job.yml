@@ -1,12 +1,14 @@
 name: dev-prod-job
 
 on:
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
+  push:
     branches: 
       - dev
       - main
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+
   
 jobs:
   experiment:
