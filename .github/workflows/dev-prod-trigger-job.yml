@@ -68,6 +68,8 @@ jobs:
           echo "Dataset '$dataset_name' with version '$dataset_version' exists."
         else
           echo "Dataset '$dataset_name' with version '$dataset_version' does not exist."
+          echo "Dataset will be created"
+          az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
         exit 1
         fi
         # az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table
