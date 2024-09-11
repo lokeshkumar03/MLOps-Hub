@@ -72,12 +72,12 @@ jobs:
         fi
         # az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table
         # az ml data list --name ${{vars.DATASETNAME}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table
-        if az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table | grep -q "${{vars.DATASETNAME}}\s*${{vars.DATASET_VERSION}}"; then
-          echo "Dataset  exists."
-        else
-          echo "Dataset does not exist."
-          exit 1
-        fi
+        # if az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table | grep -q "${{vars.DATASETNAME}}\s*${{vars.DATASET_VERSION}}"; then
+        #   echo "Dataset  exists."
+        # else
+        #   echo "Dataset does not exist."
+        #   exit 1
+        # fi
         echo "table tablelst"
         # if az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}; then
         #   echo "Dataset exists."
