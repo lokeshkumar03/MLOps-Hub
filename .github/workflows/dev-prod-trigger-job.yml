@@ -58,7 +58,7 @@ jobs:
         status=$(az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}})
         created_at=$(echo "$status" | jq -r '.creation_context.created_at')
 
-        echo "datecreate new: created_at"
+        echo "datecreate new: $created_at"
         # echo "datecreate: $status.creation_context.created_at"
         if [ -z "$created_at" ] || [ "$created_at" == "null" ]; then
           echo "The created_at value is null or empty."
