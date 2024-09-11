@@ -60,6 +60,7 @@ jobs:
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
         status=$(az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}})
+        echo "value of status is : $status"
         created_at=$(echo "$status" | jq -r '.creation_context.created_at')
 
         echo "datecreate new: $created_at"
