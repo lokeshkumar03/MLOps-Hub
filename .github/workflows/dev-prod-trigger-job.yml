@@ -54,7 +54,8 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: Replace dataset.yml with env variable
       run: |
-          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" dataset.yml
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" dataset.yml \
+          sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" dataset.yml
     - name: check dataset list
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
