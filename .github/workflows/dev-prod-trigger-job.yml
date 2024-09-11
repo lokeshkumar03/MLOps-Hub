@@ -74,6 +74,7 @@ jobs:
         fi
       env:
           DATASET_NAME: ${{ vars.DATASETNAME }}
+          DBVERSION: ${{vars.DATASET_VERSION}}
         # echo "file status= $status"
     # - name: Create dataset
     #   run: az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
