@@ -52,6 +52,10 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: check dataset list
+      run: |
+        status=$(az ml data show --name ${{vars.DATASETNAME}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --query status -o tsv)
+        echo "file status= $status"
     - name: Create dataset
       run: az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
     - id: mljobid
