@@ -62,69 +62,30 @@ jobs:
         dataset_name=${{vars.DATASETNAME}}
         dataset_version=${{vars.DATASET_VERSION}}
         output=$(az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table)
-        echo "Command Output:"
-        echo "$output"
         if echo "$output" | grep -q "$dataset_name" && echo "$output" | grep "$dataset_name" | grep -q "$dataset_version"; then
           echo "Dataset '$dataset_name' with version '$dataset_version' exists."
         else
           echo "Dataset '$dataset_name' with version '$dataset_version' does not exist."
           echo "Dataset will be created"
           az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
-        exit 1
-        fi
-        # az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table
-        # az ml data list --name ${{vars.DATASETNAME}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table
-        # if az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table | grep -q "${{vars.DATASETNAME}}\s*${{vars.DATASET_VERSION}}"; then
-        #   echo "Dataset  exists."
-        # else
-        #   echo "Dataset does not exist."
-        #   exit 1
-        # fi
-        echo "table tablelst"
-        # if az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}; then
-        #   echo "Dataset exists."
-        # else
-        #   echo "Dataset not found."
-        # exit 1
-        # fi
-        # status=$(az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --debug)
-        # echo "value of status is : $status"
-        # if echo "$status" | grep -q "Asset with Asset ID was not found"; then
-        #   echo "Error: The dataset with the specified name and version was not found."
-        #   exit 3
-        # fi
-        # created_at=$(echo "$status" | jq -r '.creation_context.created_at')
-
-        # echo "datecreate new: $created_at"
-        # # echo "datecreate: $status.creation_context.created_at"
-        # if [ -z "$created_at" ] || [ "$created_at" == "null" ]; then
-        #   echo "The created_at value is null or empty."
-          
-        #   az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
-
-        # else
-        #   echo "The created_at value is: $created_at"
-        # fi
+        fi        
       env:
           DATASET_NAME: ${{ vars.DATASETNAME }}
-          DBVERSION: ${{vars.DATASET_VERSION}}
-        # echo "file status= $status"
-    # - name: Create dataset
-    #   run: az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
-    # - id: mljobid
-    #   name: Run training job for dev
-    #   run: |
-    #     run_id=$(az ml job create --file code/job.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
-    #     echo "RUN_ID=$run_id" >> $GITHUB_ENV
-    # - name: Wait for job completion
-    #   run: |
-    #       status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
-    #       while [ "$status" != "Completed" ]; do
-    #         echo "Waiting for job to complete..."
-    #         sleep 60
-    #         status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
-    #       done
-    #       echo "Job completed."
+          DBVERSION: ${{vars.DATASET_VERSION}}   
+    - id: mljobid
+      name: Run training job for dev
+      run: |
+        run_id=$(az ml job create --file code/job.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
+        echo "RUN_ID=$run_id" >> $GITHUB_ENV
+    - name: Wait for job completion
+      run: |
+          status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
+          while [ "$status" != "Completed" ]; do
+            echo "Waiting for job to complete..."
+            sleep 60
+            status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
+          done
+          echo "Job completed."
     # - name: register model in dev      
     #   run: |
     #     echo "runId :${{ env.RUN_ID }}"
