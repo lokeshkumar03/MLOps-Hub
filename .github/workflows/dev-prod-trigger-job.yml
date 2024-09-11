@@ -56,13 +56,14 @@ jobs:
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
         status=$(az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}})
-        echo "datecreate[]: $status[creation_context]"
-        echo "datecreate: $status.creation_context.created_at"
-        if [ -z "$status.creation_context.created_at"]
-        then 
-          echo "\$status.creation_context.created_at is NULL"
+        created_at=$(echo "$status" | jq -r '.creation_context.created_at')
+
+        echo "datecreate new: created_at"
+        # echo "datecreate: $status.creation_context.created_at"
+        if [ -z "$created_at" ] || [ "$created_at" == "null" ]; then
+          echo "The created_at value is null or empty."
         else
-          echo "\$status.creation_context.created_at is NOT NULL"
+          echo "The created_at value is: $created_at"
         fi
         echo "file status= $status"
     # - name: Create dataset
