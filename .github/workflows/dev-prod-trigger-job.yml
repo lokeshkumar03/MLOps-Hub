@@ -59,6 +59,7 @@ jobs:
     - name: check dataset list
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
+        az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table
         # az ml data list --name ${{vars.DATASETNAME}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table
         if az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table | grep -q "${{vars.DATASETNAME}}\s*${{vars.DATASET_VERSION}}"; then
           echo "Dataset  exists."
