@@ -59,12 +59,14 @@ jobs:
     - name: check dataset list
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
-        if az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}; then
-          echo "Dataset exists."
-        else
-          echo "Dataset not found."
-        exit 1
-        fi
+        tablelst = $(az ml data list --name ${{vars.DATASETNAME}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table)
+        echo "table $tablelst"
+        # if az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}; then
+        #   echo "Dataset exists."
+        # else
+        #   echo "Dataset not found."
+        # exit 1
+        # fi
         status=$(az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --query name -o tsv)
         echo "value of status is : $status"
         if echo "$status" | grep -q "Asset with Asset ID was not found"; then
