@@ -52,6 +52,9 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Replace dataset.yml with env variable
+      run: |
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" dataset.yml
     - name: check dataset list
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
@@ -62,10 +65,15 @@ jobs:
         # echo "datecreate: $status.creation_context.created_at"
         if [ -z "$created_at" ] || [ "$created_at" == "null" ]; then
           echo "The created_at value is null or empty."
+          
+          az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
+
         else
           echo "The created_at value is: $created_at"
         fi
-        echo "file status= $status"
+      env:
+          DATASET_NAME: ${{ vars.DATASETNAME }}
+        # echo "file status= $status"
     # - name: Create dataset
     #   run: az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
     # - id: mljobid
