@@ -59,7 +59,7 @@ jobs:
     - name: check dataset list
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
-        status=$(az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} 2>&1)
+        status=$(az ml data show --name ${{vars.DATASETNAME}} --version ${{vars.DATASET_VERSION}} --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --query name -o tsv)
         echo "value of status is : $status"
         if echo "$status" | grep -q "Asset with Asset ID was not found"; then
           echo "Error: The dataset with the specified name and version was not found."
