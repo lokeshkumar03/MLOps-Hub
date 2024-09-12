@@ -94,7 +94,12 @@ jobs:
       run: |
           pwd
           cd ../.. && pwd
-
+          mkdir model
+          az ml model download --name sk-diabetes-model --version 11 --download-path  model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
+          pwd
+          cd model
+          pwd
+          ls -R
     # - name: Download the model
     #   run: |
     #     az ml model download --name sk-diabetes-model --version 11 --download-path ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --debug
