@@ -86,14 +86,14 @@ jobs:
             status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
           done
           echo "Job completed."
-    - name: register model in dev      
+    - name: Register model in dev      
       run: |
         echo "runId :${{ env.RUN_ID }}"
         az ml model create --name sk-diabetes-model --type mlflow_model --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
-    - name: create endpoint dev
+    - name: Create endpoint dev
       run:  |
-        az ml online-endpoint update -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+        az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
         sleep 60
-    - name: deploy model to endpoint dev
+    - name: deploy model to endpoint dev - blue deployment
       run:  az ml online-deployment create --name sklearn-deployment --endpoint realtime-diabetes-dev -f ./deployment.yml --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
   
