@@ -96,15 +96,15 @@ jobs:
           ls -R
     # - name: Download the model
     #   run: |
-    #     az ml model download --name sk-diabetes-model --version 10 --download-path ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --debug
+    #     az ml model download --name sk-diabetes-model --version 11 --download-path ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --debug
 
     # - name: Verify model exists
     #   run: |
     #       ls -R ./model
-    - name: Create endpoint dev
-      run:  |
-        az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
-        sleep 60
-    - name: deploy model to endpoint dev - blue deployment
-      run:  az ml online-deployment create --name sklearn-deployment --endpoint realtime-diabetes-dev -f ./deployment.yml --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
+    # - name: Create endpoint dev
+    #   run:  |
+    #     az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+    #     sleep 60
+    # - name: deploy model to endpoint dev - blue deployment
+    #   run:  az ml online-deployment create --name sklearn-deployment --endpoint realtime-diabetes-dev -f ./deployment.yml --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
   
