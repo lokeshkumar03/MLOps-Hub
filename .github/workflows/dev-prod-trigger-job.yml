@@ -93,6 +93,8 @@ jobs:
     - name: Verify model exists
       run: |
           pwd
+          cd ..
+          cd ..
           ls -R
     # - name: Download the model
     #   run: |
