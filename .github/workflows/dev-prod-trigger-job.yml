@@ -93,7 +93,7 @@ jobs:
     
     - name: Download the model
       run: |
-        az ml model download --name sk-diabetes-model --version 9 --download-path ./model
+        az ml model download --name sk-diabetes-model --version 10 --download-path ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --debug
 
     - name: Verify model exists
       run: |

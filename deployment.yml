@@ -3,7 +3,7 @@ name: sklearn-deployment
 endpoint_name: realtime-diabetes-dev
 model:
   name: sk-diabetes-model
-  version: 9
+  version: 10
   path: ./model
   type: mlflow_model
 instance_type: Standard_E2s_v3
