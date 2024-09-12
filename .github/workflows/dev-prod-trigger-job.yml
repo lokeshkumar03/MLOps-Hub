@@ -91,13 +91,13 @@ jobs:
         echo "runId :${{ env.RUN_ID }}"
         az ml model create --name sk-diabetes-model --type mlflow_model --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
     
-    - name: Download the model
-      run: |
-        az ml model download --name sk-diabetes-model --version 10 --download-path ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --debug
+    # - name: Download the model
+    #   run: |
+    #     az ml model download --name sk-diabetes-model --version 10 --download-path ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --debug
 
-    - name: Verify model exists
-      run: |
-          ls -R ./model
+    # - name: Verify model exists
+    #   run: |
+    #       ls -R ./model
     - name: Create endpoint dev
       run:  |
         az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
