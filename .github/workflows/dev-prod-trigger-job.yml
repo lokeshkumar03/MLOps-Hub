@@ -92,13 +92,10 @@ jobs:
         az ml model create --name sk-diabetes-model --type mlflow_model --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
     - name: Verify model exists
       run: |
-          pwd
-          cd ../.. && pwd
-          mkdir model
-          az ml model download --name sk-diabetes-model --version 12 --download-path  model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
-          pwd
-          cd model
-          pwd
+          pwd          
+          # mkdir model
+          az ml model download --name sk-diabetes-model --version 12 --download-path  /home/runner/work/model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
+          cd ../.. && pwd 
           ls -R
     # - name: Download the model
     #   run: |
