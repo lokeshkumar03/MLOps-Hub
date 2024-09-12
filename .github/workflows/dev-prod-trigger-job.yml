@@ -96,7 +96,9 @@ jobs:
           # mkdir model
           az ml model download --name sk-diabetes-model --version 12 --download-path  /home/runner/work/model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
           cd ../.. && pwd 
-          ls -R
+    - name: List downloaded files
+      run: |
+          ls -R ./model
     # - name: Create endpoint dev
     #   run:  |
     #     az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
