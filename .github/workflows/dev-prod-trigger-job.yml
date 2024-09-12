@@ -98,10 +98,14 @@ jobs:
     - name: List downloaded files
       run: |
           ls -R ./model
-    # - name: Create endpoint dev
-    #   run:  |
-    #     az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
-    #     sleep 60
+    - name: Create endpoint dev
+      run:  |
+        az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+        sleep 60
     - name: deploy model to endpoint dev - blue deployment
-      run:  az ml online-deployment create --name sklearn-deployment --endpoint realtime-diabetes-dev -f ./deployment.yml --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
+      run:  az ml online-deployment create --name sklearn-deployment --endpoint-name realtime-diabetes-dev --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} \
+            --model azureml:sk-diabetes-model:12 \
+            --instance-type Standard_E2s_v3 \
+            --instance-count 3
+            
   
