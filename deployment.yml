@@ -4,7 +4,7 @@ endpoint_name: realtime-diabetes-dev
 model:
   name: sk-diabetes-model
   version: 4
-  path: sk-diabetes-model:4/model
+  path: ../../model
   type: mlflow_model
 instance_type: Standard_E2s_v3
 # STANDARD_D2S_V3
