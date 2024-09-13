@@ -52,10 +52,10 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Replace dataset.yml with env variable
+    - name: Dataset.yml- Replace dataset.yml with env variable
       run: |
-          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" dataset-template.yml | \
-          sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > dataset.yml
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-template.yml | \
+          sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset.yml
     - name: check dataset list
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
@@ -67,7 +67,7 @@ jobs:
         else
           echo "Dataset '$dataset_name' with version '$dataset_version' does not exist."
           echo "Dataset will be created"
-          az ml data create --file dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
+          az ml data create --file ./deployments/dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
         fi        
       env:
           DATASET_NAME: ${{ vars.DATASETNAME }}
@@ -75,7 +75,7 @@ jobs:
     - id: mljobid
       name: Run training job for dev
       run: |
-        run_id=$(az ml job create --file code/job.yml --type mlflow_model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
+        run_id=$(az ml job create --file ./deployments/job.yml --type mlflow_model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
         echo "RUN_ID=$run_id" >> $GITHUB_ENV
     - name: Wait for job completion
       run: |
@@ -89,21 +89,43 @@ jobs:
     - name: Register model in dev      
       run: |
         echo "runId :${{ env.RUN_ID }}"
-        az ml model create --name sk-diabetes-model --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+        az ml model create --name ${{vars.REG_MODEL_NAME}} --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
     - name: Verify model exists
       run: |
           pwd          
           # mkdir model
-          az ml model download --name sk-diabetes-model --version 12 --download-path  ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
+          az ml model download --name ${{vars.REG_MODEL_NAME}} --version 12 --download-path  ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
     - name: List downloaded files
       run: |
           ls -R ./model
+    - name: Deployment.yml - Replace with env variable
+      run: |
+              sed "s/{{DEPLOYMENTNAME}}/${{ vars.ENDPOINT_NAME }}/g" ./deployments/endpoint-template.yml | \
+              sed "s/{{MODELVERSION}}/${{ vars.EP_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yaml
+              
+      env:
+          ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
+          AUTHMODE: ${{vars.ENDPOINT_AUTHMODE}}
+
+    - name: Deployment.yml - Replace with env variable
+      run: |
+              sed "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g" ./deployments/deployment-template.yml | \
+              sed "s/{{MODELVERSION}}/${{ vars.DEPLOY_REG_MODEL_VERSION }}/g" ./deployments/deployment-template.yml | \
+              sed "s/{{DEPLOYMENTPATH}}/${{ vars.DEPLOYMENT_PATH }}/g" ./deployments/deployment-template.yml | \
+              sed "s/{{DEPLOYMENTINSTANCE}}/${{ vars.DEPLOYMENT_INSTANCE }}/g" ./deployments/deployment-template.yml | \
+              sed "s/{{DEPLOYMENTINSTANCECOUNT}}/${{ vars.DEPLOYMENT_INSTANCE_COUNT }}/g" ./deployments/deployment-template.yml > ./deployments/deployment.yml
+      env:
+          DEPLOYMENTNAME: ${{ vars.DEPLOYMENT_NAME }}
+          MODELVERSION: ${{vars.DEPLOY_REG_MODEL_VERSION}}
+          DEPLOYMENTPATH: ${{ vars.DEPLOYMENT_PATH }}
+          DEPLOYMENTINSTANCE: ${{vars.DEPLOYMENT_INSTANCE}}    
+          DEPLOYMENTINSTANCECOUNT: ${{vars.DEPLOYMENT_INSTANCE_COUNT}} 
     - name: Create endpoint dev
       run:  |
-        az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+        az ml online-endpoint create -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
         sleep 60
     - name: deploy model to endpoint dev - blue deployment
-      run:  az ml online-deployment create --name sklearn-deployment -f ./deployment.yml --endpoint-name realtime-diabetes-dev --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}}
+      run:  az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}}
 
             
   

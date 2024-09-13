@@ -1,0 +1,15 @@
+# $schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+# name: sklearn-deployment
+# endpoint_name: realtime-diabetes-dev
+# model:
+#   name: azureml:sk-diabetes-model:12
+# instance_type: Standard_E2s_v3
+# instance_count: 3
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+model:
+  name: {{DEPLOYMENTNAME}}
+  version: {{MODELVERSION}}
+  path: {{DEPLOYMENTPATH}}
+  type: mlflow_model
+instance_type: {{DEPLOYMENTINSTANCE}}
+instance_count: {{DEPLOYMENTINSTANCECOUNT}}
