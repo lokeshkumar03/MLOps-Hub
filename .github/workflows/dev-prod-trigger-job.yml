@@ -75,7 +75,7 @@ jobs:
     - id: mljobid
       name: Run training job for dev
       run: |
-        run_id=$(az ml job create --file ./deployments/job.yml --type mlflow_model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
+        run_id=$(az ml job create --file ./deployments/job.yml  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
         echo "RUN_ID=$run_id" >> $GITHUB_ENV
     - name: Wait for job completion
       run: |
