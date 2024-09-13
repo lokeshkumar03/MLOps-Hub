@@ -80,21 +80,16 @@ jobs:
     - name: Wait for job completion
       run: |
           status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
-          while [[ "$status" != "Completed" && "$status" != "Failed" && "$status" != "Canceled"]]; do
+          while [ "$status" != "Completed" ]; do
             echo "Waiting for job to complete..."
             sleep 60
             status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
+            
+            if [ "status" != "Completed"]
+              echo "echo "status : $status""
+            fi
           done
-          if [ "$status" == "Completed" ]; then
-            echo "Job completed successfully."
-            exit 0
-          elif [ "$status" == "Failed" ]; then
-            echo "Job failed. Exiting with error."
-          exit 1
-          elif [ "$status" == "Canceled" ]; then
-            echo "Job was canceled. Exiting with error."
-          exit 1
-          fi
+
     - name: List model folder files
       run: |
             pwd
