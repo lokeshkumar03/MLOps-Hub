@@ -89,7 +89,7 @@ jobs:
     - name: List model folder files
       run: |
             pwd
-            ls -R ./model
+            ls -R ./code/model
     - name: Register model in dev      
       run: |
         echo "runId :${{ env.RUN_ID }}"
