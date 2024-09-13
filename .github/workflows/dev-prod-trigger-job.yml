@@ -89,7 +89,7 @@ jobs:
     - name: Register model in dev      
       run: |
         echo "runId :${{ env.RUN_ID }}"
-        az ml model create --name sk-diabetes-model --type mlflow_model --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+        az ml model create --name sk-diabetes-model --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
     - name: Verify model exists
       run: |
           pwd          
@@ -103,9 +103,7 @@ jobs:
         az ml online-endpoint create -f ./endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
         sleep 60
     - name: deploy model to endpoint dev - blue deployment
-      run:  az ml online-deployment create --name sklearn-deployment --endpoint-name realtime-diabetes-dev --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} \
-            --model azureml:sk-diabetes-model:12 \
-            --instance-type Standard_E2s_v3 \
-            --instance-count 3
+      run:  az ml online-deployment create --name sklearn-deployment -f ./deployment.yml --endpoint-name realtime-diabetes-dev --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}}
+
             
   
