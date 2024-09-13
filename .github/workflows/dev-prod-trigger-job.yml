@@ -80,7 +80,7 @@ jobs:
     - name: Wait for job completion
       run: |
           status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
-          while [ "$status" != "Completed" && "$status" != "Failed" && "$status" != "Canceled"]; do
+          while [[ "$status" != "Completed" && "$status" != "Failed" && "$status" != "Canceled"]]; do
             echo "Waiting for job to complete..."
             sleep 60
             status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
