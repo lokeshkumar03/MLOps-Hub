@@ -128,3 +128,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+mlflow-model/conda.yaml
+mlflow-model/MLmodel
+mlflow-model/model.pkl
+mlflow-model/python_env.yaml
+mlflow-model/requirements.txt
