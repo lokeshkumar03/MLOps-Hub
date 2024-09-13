@@ -85,7 +85,7 @@ jobs:
             sleep 60
             status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
             
-            if [ "status" != "Completed"]
+            if [ "status" != "Completed"]; then
               echo "echo "status : $status""
             fi
           done
