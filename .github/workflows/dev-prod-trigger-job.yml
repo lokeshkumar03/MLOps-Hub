@@ -84,9 +84,9 @@ jobs:
             echo "Waiting for job to complete..."
             sleep 60
             status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
-            
+            echo "echo status : $status"
             if [ "status" != "Completed"]; then
-              echo "echo "status : $status""
+              echo "echo status : $status"
             fi
           done
 
@@ -106,14 +106,14 @@ jobs:
     - name: List downloaded files
       run: |
           ls -R ./model
-    - name: Deployment.yml - Replace with env variable
+    - name: endpoint.yml - Replace with env variable
       run: |
-              sed "s/{{DEPLOYMENTNAME}}/${{ vars.ENDPOINT_NAME }}/g" ./deployments/endpoint-template.yml | \
-              sed "s/{{MODELVERSION}}/${{ vars.EP_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
+              sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g" ./deployments/endpoint-template.yml | \
+              sed "s/{{AUTHMODE}}/${{ vars.EP_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
               
       env:
           ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
-          AUTHMODE: ${{vars.ENDPOINT_AUTHMODE}}
+          AUTHMODE: ${{ vars.ENDPOINT_AUTHMODE }}
 
     - name: Deployment.yml - Replace with env variable
       run: |
@@ -124,21 +124,22 @@ jobs:
               sed "s/{{DEPLOYMENTINSTANCECOUNT}}/${{ vars.DEPLOYMENT_INSTANCE_COUNT }}/g" ./deployments/deployment-template.yml > ./deployments/deployment.yml
       env:
           DEPLOYMENTNAME: ${{ vars.DEPLOYMENT_NAME }}
-          MODELVERSION: ${{vars.DEPLOY_REG_MODEL_VERSION}}
+          MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
           DEPLOYMENTPATH: ${{ vars.DEPLOYMENT_PATH }}
-          DEPLOYMENTINSTANCE: ${{vars.DEPLOYMENT_INSTANCE}}    
-          DEPLOYMENTINSTANCECOUNT: ${{vars.DEPLOYMENT_INSTANCE_COUNT}} 
+          DEPLOYMENTINSTANCE: ${{ vars.DEPLOYMENT_INSTANCE }}    
+          DEPLOYMENTINSTANCECOUNT: ${{ vars.DEPLOYMENT_INSTANCE_COUNT }} 
     - name: Create endpoint dev
       run:  |
-              # az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
-              ENDPOINT_EXISTS=$(az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query "name" >/dev/null 2>&1)
+              # az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }}
+              ENDPOINT_EXISTS=$(az ml online-endpoint list --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }} --query "[?name=='$ENDPOINT_NAME'].name" -o tsv)
               echo "endpoint sttaus : $ENDPOINT_EXISTS"
-              if [ -z "$ENDPOINT_EXISTS" ]; then
+              if [ -n "$ENDPOINT_EXISTS" ]; then
                 echo "Endpoint ${{ vars.ENDPOINT_NAME }} exists. Updating deployment..."
                 az ml online-endpoint update --name $ENDPOINT_NAME -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
               else
                 echo "Endpoint ${{ vars.ENDPOINT_NAME }} doesn't exists. Updating deployment..."
                 az ml online-endpoint create -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+              fi
               sleep 60
     - name: deploy model to endpoint dev - blue deployment
       run:  az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}}
