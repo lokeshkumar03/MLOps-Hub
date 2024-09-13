@@ -105,7 +105,7 @@ jobs:
     - name: Deployment.yml - Replace with env variable
       run: |
               sed "s/{{DEPLOYMENTNAME}}/${{ vars.ENDPOINT_NAME }}/g" ./deployments/endpoint-template.yml | \
-              sed "s/{{MODELVERSION}}/${{ vars.EP_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yaml
+              sed "s/{{MODELVERSION}}/${{ vars.EP_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
               
       env:
           ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
@@ -126,7 +126,13 @@ jobs:
           DEPLOYMENTINSTANCECOUNT: ${{vars.DEPLOYMENT_INSTANCE_COUNT}} 
     - name: Create endpoint dev
       run:  |
-        az ml online-endpoint create -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+        az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --query "name" >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
+         echo "Endpoint ${{ vars.ENDPOINT_NAME }} exists. Updating deployment..."
+         az ml online-endpoint update --name $ENDPOINT_NAME -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+        else
+          echo "Endpoint ${{ vars.ENDPOINT_NAME }} doesn't exists. Updating deployment..."
+          az ml online-endpoint create -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
         sleep 60
     - name: deploy model to endpoint dev - blue deployment
       run:  az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}}
