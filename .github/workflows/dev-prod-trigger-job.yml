@@ -85,7 +85,7 @@ jobs:
             sleep 60
             status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
             echo "echo status : $status"
-            if [ "status" != "Completed"]; then
+            if [[ "status" != "Completed" ]] ; then
               echo "echo status : $status"
             fi
           done
@@ -131,7 +131,7 @@ jobs:
     - name: Create endpoint dev
       run:  |
               # az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }}
-              ENDPOINT_EXISTS=$(az ml online-endpoint list --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }} --query "[?name=='$ENDPOINT_NAME'].name" -o tsv)
+              ENDPOINT_EXISTS=$(az ml online-endpoint list   --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }} --query "[?name=='${{ vars.ENDPOINT_NAME }}'].name" -o tsv)
               echo "endpoint sttaus : $ENDPOINT_EXISTS"
               if [ -n "$ENDPOINT_EXISTS" ]; then
                 echo "Endpoint ${{ vars.ENDPOINT_NAME }} exists. Updating deployment..."
