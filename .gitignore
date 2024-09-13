@@ -133,3 +133,8 @@ mlflow-model/MLmodel
 mlflow-model/model.pkl
 mlflow-model/python_env.yaml
 mlflow-model/requirements.txt
+model/conda.yaml
+model/MLmodel
+model/model.pkl
+model/python_env.yaml
+model/requirements.txt
