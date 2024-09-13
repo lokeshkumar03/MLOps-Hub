@@ -75,7 +75,7 @@ jobs:
     - id: mljobid
       name: Run training job for dev
       run: |
-        run_id=$(az ml job create --file ./deployments/job.yml  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
+        run_id=$(az ml job create --file ./job.yml  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
         echo "RUN_ID=$run_id" >> $GITHUB_ENV
     - name: Wait for job completion
       run: |
@@ -86,6 +86,10 @@ jobs:
             status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
           done
           echo "Job completed."
+    - name: List model folder files
+      run: |
+            pwd
+            ls -R ./model
     - name: Register model in dev      
       run: |
         echo "runId :${{ env.RUN_ID }}"
