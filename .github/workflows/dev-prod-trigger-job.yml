@@ -126,8 +126,8 @@ jobs:
           DEPLOYMENTINSTANCECOUNT: ${{vars.DEPLOYMENT_INSTANCE_COUNT}} 
     - name: Create endpoint dev
       run:  |
-              az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} 
-              ENDPOINT_EXISTS=$(az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --query "name" >/dev/null 2>&1)
+              az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+              ENDPOINT_EXISTS=$(az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query "name" >/dev/null 2>&1)
               echo "endpoint sttaus : $ENDPOINT_EXISTS"
               if [ -z "$ENDPOINT_EXISTS" ]; then
                 echo "Endpoint ${{ vars.ENDPOINT_NAME }} exists. Updating deployment..."
