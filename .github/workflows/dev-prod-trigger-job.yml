@@ -67,9 +67,10 @@ jobs:
     - name: Azure login
       uses: azure/login@v1
       with:
-           creds: ${{ secrets.AZURE_CREDENTIALS }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: check dataset list
       run: |
+        pwd
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
         dataset_name=${{vars.DATASETNAME}}
         dataset_version=${{vars.DATASET_VERSION}}
@@ -132,8 +133,17 @@ jobs:
                 az ml online-endpoint create -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
               fi
               sleep 60
+      env:
+          ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
+          AUTHMODE: ${{ vars.ENDPOINT_AUTHMODE }}
     - name: deploy model to endpoint dev - blue deployment
       run:  az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}}
+      env:
+          DEPLOYMENTNAME: ${{ vars.DEPLOYMENT_NAME }}
+          MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
+          DEPLOYMENTPATH: ${{ vars.DEPLOYMENT_PATH }}
+          DEPLOYMENTINSTANCE: ${{ vars.DEPLOYMENT_INSTANCE }}    
+          DEPLOYMENTINSTANCECOUNT: ${{ vars.DEPLOYMENT_INSTANCE_COUNT }}
 
             
   
