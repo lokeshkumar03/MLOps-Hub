@@ -48,14 +48,26 @@ jobs:
         python -m pip install -r requirements.txt
     - name: Install az ml extension
       run: az extension add -n ml -y
-    - name: Azure login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Dataset.yml- Replace dataset.yml with env variable
       run: |
           sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-template.yml | \
           sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset.yml
+    - name: endpoint.yml - Replace with env variable
+      run: |
+            sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g" ./deployments/endpoint-template.yml | \
+            sed "s/{{AUTHMODE}}/${{ vars.EP_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
+    - name: Deployment.yml - Replace with env variable
+      run: |
+            sed "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g" ./deployments/deployment-template.yml | \
+            sed "s/{{MODELVERSION}}/${{ vars.DEPLOY_REG_MODEL_VERSION }}/g" ./deployments/deployment-template.yml | \
+            sed "s/{{DEPLOYMENTPATH}}/${{ vars.DEPLOYMENT_PATH }}/g" ./deployments/deployment-template.yml | \
+            sed "s/{{DEPLOYMENTINSTANCE}}/${{ vars.DEPLOYMENT_INSTANCE }}/g" ./deployments/deployment-template.yml | \
+            sed "s/{{DEPLOYMENTINSTANCECOUNT}}/${{ vars.DEPLOYMENT_INSTANCE_COUNT }}/g" ./deployments/deployment-template.yml > ./deployments/deployment.yml
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+           creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: check dataset list
       run: |
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
@@ -106,29 +118,7 @@ jobs:
     - name: List downloaded files
       run: |
           ls -R ./model
-    - name: endpoint.yml - Replace with env variable
-      run: |
-              sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g" ./deployments/endpoint-template.yml | \
-              sed "s/{{AUTHMODE}}/${{ vars.EP_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
-              
-      env:
-          ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
-          AUTHMODE: ${{ vars.ENDPOINT_AUTHMODE }}
 
-    - name: Deployment.yml - Replace with env variable
-      run: |
-          sed  "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g" ./deployments/deployment-template.yml | \
-          sed  "s/{{MODELVERSION}}/${{ vars.DEPLOY_REG_MODEL_VERSION }}/g" ./deployments/deployment-template.yml | \
-          sed  "s/{{DEPLOYMENTPATH}}/${{ vars.DEPLOYMENT_PATH }}/g" ./deployments/deployment-template.yml | \
-          sed  "s/{{DEPLOYMENTINSTANCE}}/${{ vars.DEPLOYMENT_INSTANCE }}/g" ./deployments/deployment-template.yml | \
-          sed  "s/{{DEPLOYMENTINSTANCECOUNT}}/${{ vars.DEPLOYMENT_INSTANCE_COUNT }}/g" ./deployments/deployment-template.yml > ./deployments/deployment.yml
-
-      env:
-          DEPLOYMENTNAME: ${{ vars.DEPLOYMENT_NAME }}
-          MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
-          DEPLOYMENTPATH: ${{ vars.DEPLOYMENT_PATH }}
-          DEPLOYMENTINSTANCE: ${{ vars.DEPLOYMENT_INSTANCE }}    
-          DEPLOYMENTINSTANCECOUNT: ${{ vars.DEPLOYMENT_INSTANCE_COUNT }} 
     - name: Create endpoint dev
       run:  |
               # az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }}
