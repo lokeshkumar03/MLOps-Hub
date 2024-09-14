@@ -117,12 +117,13 @@ jobs:
 
     - name: Deployment.yml - Replace with env variable
       run: |
-          sed -e "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g" \
-              -e "s/{{MODELVERSION}}/${{ vars.DEPLOY_REG_MODEL_VERSION }}/g" \
-              -e "s/{{DEPLOYMENTPATH}}/${{ vars.DEPLOYMENT_PATH }}/g" \
-              -e "s/{{DEPLOYMENTINSTANCE}}/${{ vars.DEPLOYMENT_INSTANCE }}/g" \
-              -e "s/{{DEPLOYMENTINSTANCECOUNT}}/${{ vars.DEPLOYMENT_INSTANCE_COUNT }}/g" \
+          sed -e "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g" | \
+              -e "s/{{MODELVERSION}}/${{ vars.DEPLOY_REG_MODEL_VERSION }}/g" | \
+              -e "s/{{DEPLOYMENTPATH}}/${{ vars.DEPLOYMENT_PATH }}/g" | \
+              -e "s/{{DEPLOYMENTINSTANCE}}/${{ vars.DEPLOYMENT_INSTANCE }}/g" | \
+              -e "s/{{DEPLOYMENTINSTANCECOUNT}}/${{ vars.DEPLOYMENT_INSTANCE_COUNT }}/g" | \
               ./deployments/deployment-template.yml > ./deployments/deployment.yml
+              
       env:
           DEPLOYMENTNAME: ${{ vars.DEPLOYMENT_NAME }}
           MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
