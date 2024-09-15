@@ -117,12 +117,11 @@ jobs:
       run: |
           pwd          
           # mkdir model
-          az ml model download --name ${{vars.REG_MODEL_NAME}} --version 12 --download-path  ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
+          az ml model download --name ${{vars.REG_MODEL_NAME}} --version 12 --download-path  downloadmodel --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
     - name: List downloaded files
       run: |
           pwd
           ls -d */
-          ls -R ./model
 
     - name: Create endpoint dev
       run:  |
