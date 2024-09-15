@@ -60,7 +60,7 @@ jobs:
     #     config: ./deployments/endpoint.yml
     - name: endpoint.yml - Replace with env variable
       run: |
-            sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g"; "s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
+            sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g; s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
             cat ./deployments/endpoint.yml
     - name: Deployment.yml - Replace with env variable
       run: |
