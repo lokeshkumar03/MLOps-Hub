@@ -53,10 +53,14 @@ jobs:
       run: |
           sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-template.yml | \
           sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset.yml
+    # - name: Read and substitute variables in endpoint.yml
+    #   id: read-yaml
+    #   uses: ehsandanesh/action-read-yaml@env-var-and-filter
+    #   with:
+    #     config: ./deployments/endpoint.yml
     - name: endpoint.yml - Replace with env variable
       run: |
-            sed "s#{{ENDPOINTNAME}}#${{ vars.ENDPOINT_NAME }}#g" ./deployments/endpoint-template.yml | \
-            sed "s#{{AUTHMODE}}#${{ vars.ENDPOINT_AUTHMODE }}#g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
+            sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g"; "s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
             cat ./deployments/endpoint.yml
     - name: Deployment.yml - Replace with env variable
       run: |
@@ -124,7 +128,8 @@ jobs:
 
     - name: Create endpoint dev
       run:  |
-              # az ml online-endpoint show --name ${{ vars.ENDPOINT_NAME }} --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }}
+              cat ./deployments/endpoint.yml
+              echo "check endpoint exist"
               ENDPOINT_EXISTS=$(az ml online-endpoint list --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }} --query "[?name=='${{ vars.ENDPOINT_NAME }}'].name" -o tsv)
               echo "endpoint staus : $ENDPOINT_EXISTS"
               if [ -z "$ENDPOINT_EXISTS" ]; then
