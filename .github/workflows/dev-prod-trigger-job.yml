@@ -56,7 +56,7 @@ jobs:
     - name: endpoint.yml - Replace with env variable
       run: |
             sed "s#{{ENDPOINTNAME}}#${{ vars.ENDPOINT_NAME }}#g" ./deployments/endpoint-template.yml | \
-            sed "s#{{AUTHMODE}}#${{ vars.EP_AUTHMODE }}#g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
+            sed "s#{{AUTHMODE}}#${{ vars.ENDPOINT_AUTHMODE }}#g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
             cat ./deployments/endpoint.yml
     - name: Deployment.yml - Replace with env variable
       run: |
