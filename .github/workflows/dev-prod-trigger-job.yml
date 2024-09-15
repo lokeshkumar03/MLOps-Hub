@@ -53,15 +53,10 @@ jobs:
       run: |
           sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-template.yml | \
           sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset.yml
-    # - name: Read and substitute variables in endpoint.yml
-    #   id: read-yaml
-    #   uses: ehsandanesh/action-read-yaml@env-var-and-filter
-    #   with:
-    #     config: ./deployments/endpoint.yml
     - name: endpoint.yml - Replace with env variable
       run: |
             sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g; s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
-            cat ./deployments/endpoint.yml
+            # cat ./deployments/endpoint.yml
     - name: Deployment.yml - Replace with env variable
       run: |
             sed "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g; \
@@ -70,7 +65,7 @@ jobs:
             s#{{DEPLOYMENTINSTANCE}}#${{ vars.DEPLOYMENT_INSTANCE }}#g; \
             s#{{DEPLOYMENTINSTANCECOUNT}}#${{ vars.DEPLOYMENT_INSTANCE_COUNT }}#g" \
             ./deployments/deployment-template.yml > ./deployments/deployment.yml
-            cat ./deployments/deployment.yml
+            # cat ./deployments/deployment.yml
     - name: Azure login
       uses: azure/login@v1
       with:
@@ -125,6 +120,8 @@ jobs:
           az ml model download --name ${{vars.REG_MODEL_NAME}} --version 12 --download-path  ./model --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
     - name: List downloaded files
       run: |
+          pwd
+          ls -d */
           ls -R ./model
 
     - name: Create endpoint dev
