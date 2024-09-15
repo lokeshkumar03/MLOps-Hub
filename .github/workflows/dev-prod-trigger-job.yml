@@ -55,8 +55,9 @@ jobs:
           sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset.yml
     - name: endpoint.yml - Replace with env variable
       run: |
-            sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g" ./deployments/endpoint-template.yml | \
-            sed "s/{{AUTHMODE}}/${{ vars.EP_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
+            sed "s#{{ENDPOINTNAME}}#${{ vars.ENDPOINT_NAME }}#g" ./deployments/endpoint-template.yml | \
+            sed "s#{{AUTHMODE}}#${{ vars.EP_AUTHMODE }}#g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
+            cat ./deployments/endpoint.yml
     - name: Deployment.yml - Replace with env variable
       run: |
             sed "s#{{DEPLOYMENTNAME}}#${{ vars.DEPLOYMENT_NAME }}#g" ./deployments/deployment-template.yml | \
@@ -64,6 +65,7 @@ jobs:
             sed "s#{{DEPLOYMENTPATH}}#${{ vars.DEPLOYMENT_PATH }}#g" ./deployments/deployment-template.yml | \
             sed "s#{{DEPLOYMENTINSTANCE}}#${{ vars.DEPLOYMENT_INSTANCE }}#g" ./deployments/deployment-template.yml | \
             sed "s#{{DEPLOYMENTINSTANCECOUNT}}#${{ vars.DEPLOYMENT_INSTANCE_COUNT }}#g" ./deployments/deployment-template.yml > ./deployments/deployment.yml
+            cat ./deployments/deployment.yml
     - name: Azure login
       uses: azure/login@v1
       with:
