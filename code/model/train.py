@@ -1,20 +1,17 @@
 # Import libraries
-
 import argparse
 import glob
 import os
-
 import pandas as pd
-
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from mlflow.sklearn import autolog
+
 
 # define functions
 def main(args):
     # TO DO: enable autologging
     autolog()
-
     # read data
     df = get_csvs_df(args.training_data)
 
@@ -24,6 +21,7 @@ def main(args):
     # train model
     train_model(args.reg_rate, X_train, X_test, y_train, y_test)
 
+
 def get_csvs_df(path):
     if not os.path.exists(path):
         raise RuntimeError(f"Cannot use non-existent path provided: {path}")
@@ -31,6 +29,7 @@ def get_csvs_df(path):
     if not csv_files:
         raise RuntimeError(f"No CSV files found in provided data path: {path}")
     return pd.concat((pd.read_csv(f) for f in csv_files), sort=False)
+
 
 # TO DO: add function to split data
 def split_data(df, test_size=0.2):
@@ -41,9 +40,11 @@ def split_data(df, test_size=0.2):
         )
     return X_train, X_test, y_train, y_test
 
+
 def train_model(reg_rate, X_train, X_test, y_train, y_test):
     # train model
     LogisticRegression(C=1/reg_rate, solver="liblinear").fit(X_train, y_train)
+
 
 def parse_args():
     # setup arg parser
@@ -76,3 +77,4 @@ if __name__ == "__main__":
     # add space in logs
     print("*" * 60)
     print("\n\n")
+    
