@@ -129,7 +129,7 @@ jobs:
     - name: deploy model to endpoint dev - blue deployment
       run:  |
               # az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
-              az ml online-deployment create --name ${{vars.REG_MODEL_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
+              az ml online-deployment -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
       env:
           DEPLOYMENTNAME: ${{ vars.REG_MODEL_NAME }}
           MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
