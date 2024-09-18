@@ -65,14 +65,12 @@ jobs:
             s#{{DEPLOYMENTINSTANCE}}#${{ vars.DEPLOYMENT_INSTANCE }}#g; \
             s#{{DEPLOYMENTINSTANCECOUNT}}#${{ vars.DEPLOYMENT_INSTANCE_COUNT }}#g" \
             ./deployments/deployment-template.yml > ./deployments/deployment.yml
-            # cat ./deployments/deployment.yml
     - name: Azure login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: check dataset list
       run: |
-        pwd
         echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
         dataset_name=${{vars.DATASETNAME}}
         dataset_version=${{vars.DATASET_VERSION}}
@@ -87,10 +85,10 @@ jobs:
       env:
           DATASET_NAME: ${{ vars.DATASETNAME }}
           DBVERSION: ${{vars.DATASET_VERSION}}   
-    - id: mljobid
-      name: Run training job for dev
+    # - id: mljobid
+    - name: Run training job for dev
       run: |
-        run_id=$(az ml job create --file deployments/job.yml  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
+        run_id=$(az ml job create --file deployments/job-dev.yml  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
         echo "RUN_ID=$run_id" >> $GITHUB_ENV
     - name: Wait for job completion
       run: |
@@ -105,27 +103,15 @@ jobs:
             fi
           done
 
-    - name: List model folder files
-      run: |
-            pwd
-            ls -R ./code/model
     - name: Register model in dev      
       run: |
         echo "runId :${{ env.RUN_ID }}"
         az ml model create --name ${{vars.REG_MODEL_NAME}} --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
-    - name: Verify model exists
+    - name: download model
       run: |
-          pwd          
-          # mkdir model
-          az ml model download --name ${{vars.REG_MODEL_NAME}} --version 12 --download-path  downloadmodel --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
-    - name: List downloaded files
-      run: |
-          pwd
-          ls -d */
-
+          az ml model download --name ${{vars.REG_MODEL_NAME}} --version ${{ vars.DEPLOY_REG_MODEL_VERSION }} --download-path  downloadmodel --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
     - name: Create endpoint dev
       run:  |
-              cat ./deployments/endpoint.yml
               echo "check endpoint exist"
               ENDPOINT_EXISTS=$(az ml online-endpoint list --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }} --query "[?name=='${{ vars.ENDPOINT_NAME }}'].name" -o tsv)
               echo "endpoint staus : $ENDPOINT_EXISTS"
@@ -141,9 +127,11 @@ jobs:
           ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
           AUTHMODE: ${{ vars.ENDPOINT_AUTHMODE }}
     - name: deploy model to endpoint dev - blue deployment
-      run:  az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}}
+      run:  |
+              # az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
+              az ml online-deployment create --name ${{vars.REG_MODEL_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
       env:
-          DEPLOYMENTNAME: ${{ vars.DEPLOYMENT_NAME }}
+          DEPLOYMENTNAME: ${{ vars.REG_MODEL_NAME }}
           MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
           DEPLOYMENTPATH: ${{ vars.DEPLOYMENT_PATH }}
           DEPLOYMENTINSTANCE: ${{ vars.DEPLOYMENT_INSTANCE }}    
