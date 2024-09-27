@@ -57,7 +57,7 @@ jobs:
             # cat ./deployments/endpoint.yml
     - name: Deployment.yml - Replace with env variable
       run: |
-            sed "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g; \
+            sed "s/{{DEPLOYMENTNAME}}/${{ vars.REG_MODEL_NAME }}/g; \
             s#{{MODELVERSION}}#${{ vars.DEPLOY_REG_MODEL_VERSION }}#g; \
             s#{{DEPLOYMENTPATH}}#${{ vars.DEPLOYMENT_PATH }}#g; \
             s#{{DEPLOYMENTINSTANCE}}#${{ vars.DEPLOYMENT_INSTANCE }}#g; \
