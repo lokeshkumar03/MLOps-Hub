@@ -83,7 +83,6 @@ jobs:
       env:
           DATASET_NAME: ${{ vars.DATASETNAME }}
           DBVERSION: ${{vars.DATASET_VERSION}}   
-    # - id: mljobid
     - name: Run training job for dev
       run: |
         run_id=$(az ml job create --file deployments/job-dev.yml  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
@@ -125,9 +124,8 @@ jobs:
           ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
           AUTHMODE: ${{ vars.ENDPOINT_AUTHMODE }}
     - name: deploy model to endpoint dev - blue deployment
-      run:  |
-              # az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
-              az ml online-deployment create -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
+      run:  |              
+              az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
       env:
           DEPLOYMENTNAME: ${{ vars.REG_MODEL_NAME }}
           MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
