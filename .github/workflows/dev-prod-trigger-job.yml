@@ -9,132 +9,132 @@ on:
       - 'docs/**'
   
 jobs:
-  # lint-and-test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.8'
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install -r requirements.txt
-  #     - name: install flake8
-  #       run: |
-  #         python -m pip install flake8
-  #     - name: lint code with flake8
-  #       run: |
-  #         flake8 code/model/train.py
-  #     - name: Run tests with pytest
-  #       run: pytest tests/
-  # experiment:
-  #   runs-on: ubuntu-latest
-  #   needs: lint-and-test
-  #   environment:
-  #       name: dev
-  #   steps:
-  #   - name: Check out repo
-  #     uses: actions/checkout@main
-  #   - name: Use Python version 3.10
-  #     uses: actions/setup-python@v3
-  #     with:
-  #       python-version: '3.10'
-  #   - name: install requirements.txt
-  #     run: |
-  #       python -m pip install -r requirements.txt
-  #   - name: Install az ml extension
-  #     run: az extension add -n ml -y
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: install flake8
+        run: |
+          python -m pip install flake8
+      - name: lint code with flake8
+        run: |
+          flake8 code/model/train.py
+      - name: Run tests with pytest
+        run: pytest tests/
+  experiment:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    environment:
+        name: dev
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@main
+    - name: Use Python version 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - name: install requirements.txt
+      run: |
+        python -m pip install -r requirements.txt
+    - name: Install az ml extension
+      run: az extension add -n ml -y
 
-  #   - name: Dataset.yml- Replace dataset.yml with env variable
-  #     run: |
-  #         sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-template.yml | \
-  #         sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset.yml
-  #   - name: endpoint.yml - Replace with env variable
-  #     run: |
-  #           sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g; s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
-  #           # cat ./deployments/endpoint.yml
-  #   - name: Deployment.yml - Replace with env variable
-  #     run: |
-  #           sed "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g; \
-  #           s#{{MODELVERSION}}#${{ vars.DEPLOY_REG_MODEL_VERSION }}#g; \
-  #           s#{{DEPLOYMENTPATH}}#${{ vars.DEPLOYMENT_PATH }}#g; \
-  #           s#{{DEPLOYMENTINSTANCE}}#${{ vars.DEPLOYMENT_INSTANCE }}#g; \
-  #           s#{{DEPLOYMENTINSTANCECOUNT}}#${{ vars.DEPLOYMENT_INSTANCE_COUNT }}#g" \
-  #           ./deployments/deployment-template.yml > ./deployments/deployment.yml
-  #   - name: Azure login
-  #     uses: azure/login@v1
-  #     with:
-  #       creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #   - name: check dataset list
-  #     run: |
-  #       echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
-  #       dataset_name=${{vars.DATASETNAME}}
-  #       dataset_version=${{vars.DATASET_VERSION}}
-  #       output=$(az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table)
-  #       if echo "$output" | grep -q "$dataset_name" && echo "$output" | grep "$dataset_name" | grep -q "$dataset_version"; then
-  #         echo "Dataset '$dataset_name' with version '$dataset_version' exists."
-  #       else
-  #         echo "Dataset '$dataset_name' with version '$dataset_version' does not exist."
-  #         echo "Dataset will be created"
-  #         az ml data create --file ./deployments/dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
-  #       fi        
-  #     env:
-  #         DATASET_NAME: ${{ vars.DATASETNAME }}  
-  #         DBVERSION: ${{vars.DATASET_VERSION}}   
-  #   - name: Run training job for dev
-  #     run: |
-  #       run_id=$(az ml job create --file deployments/job-dev.yml  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
-  #       echo "RUN_ID=$run_id" >> $GITHUB_ENV
-  #   - name: Wait for job completion
-  #     run: |
-  #         status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
-  #         while [ "$status" != "Completed" ]; do
-  #           echo "Waiting for job to complete..."
-  #           sleep 60
-  #           status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
-  #           echo "echo status : $status"
-  #           if [[ "status" != "Completed" ]] ; then
-  #             echo "echo status : $status"
-  #           fi
-  #         done
+    - name: Dataset.yml- Replace dataset.yml with env variable
+      run: |
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-template.yml | \
+          sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset.yml
+    - name: endpoint.yml - Replace with env variable
+      run: |
+            sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g; s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
+            # cat ./deployments/endpoint.yml
+    - name: Deployment.yml - Replace with env variable
+      run: |
+            sed "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g; \
+            s#{{MODELVERSION}}#${{ vars.DEPLOY_REG_MODEL_VERSION }}#g; \
+            s#{{DEPLOYMENTPATH}}#${{ vars.DEPLOYMENT_PATH }}#g; \
+            s#{{DEPLOYMENTINSTANCE}}#${{ vars.DEPLOYMENT_INSTANCE }}#g; \
+            s#{{DEPLOYMENTINSTANCECOUNT}}#${{ vars.DEPLOYMENT_INSTANCE_COUNT }}#g" \
+            ./deployments/deployment-template.yml > ./deployments/deployment.yml
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: check dataset list
+      run: |
+        echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
+        dataset_name=${{vars.DATASETNAME}}
+        dataset_version=${{vars.DATASET_VERSION}}
+        output=$(az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table)
+        if echo "$output" | grep -q "$dataset_name" && echo "$output" | grep "$dataset_name" | grep -q "$dataset_version"; then
+          echo "Dataset '$dataset_name' with version '$dataset_version' exists."
+        else
+          echo "Dataset '$dataset_name' with version '$dataset_version' does not exist."
+          echo "Dataset will be created"
+          az ml data create --file ./deployments/dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
+        fi        
+      env:
+          DATASET_NAME: ${{ vars.DATASETNAME }}  
+          DBVERSION: ${{vars.DATASET_VERSION}}   
+    - name: Run training job for dev
+      run: |
+        run_id=$(az ml job create --file deployments/job-dev.yml  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query name -o tsv)
+        echo "RUN_ID=$run_id" >> $GITHUB_ENV
+    - name: Wait for job completion
+      run: |
+          status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
+          while [ "$status" != "Completed" ]; do
+            echo "Waiting for job to complete..."
+            sleep 60
+            status=$(az ml job show --name ${{ env.RUN_ID }} --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} --query status -o tsv)
+            echo "echo status : $status"
+            if [[ "status" != "Completed" ]] ; then
+              echo "echo status : $status"
+            fi
+          done
 
-  #   - name: Register model in dev      
-  #     run: |
-  #       echo "runId :${{ env.RUN_ID }}"
-  #       az ml model create --name ${{vars.REG_MODEL_NAME}} --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
-  #   - name: download model
-  #     run: |
-  #         az ml model download --name ${{vars.REG_MODEL_NAME}} --version ${{ vars.DEPLOY_REG_MODEL_VERSION }} --download-path  downloadmodel --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
-  #   - name: Create endpoint dev
-  #     run:  |
-  #             echo "check endpoint exist"
-  #             ENDPOINT_EXISTS=$(az ml online-endpoint list --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }} --query "[?name=='${{ vars.ENDPOINT_NAME }}'].name" -o tsv)
-  #             echo "endpoint staus : $ENDPOINT_EXISTS"
-  #             if [ -z "$ENDPOINT_EXISTS" ]; then
-  #               echo "Endpoint ${{ vars.ENDPOINT_NAME }} doesn't exist. Creating endpoint..."
-  #               az ml online-endpoint create -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
-  #             else
-  #               echo "Endpoint ${{ vars.ENDPOINT_NAME }} exists. Updating endpoint..."
-  #               az ml online-endpoint update --name $ENDPOINT_NAME -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
-  #             fi
-  #             sleep 60
-  #     env:
-  #         ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
-  #         AUTHMODE: ${{ vars.ENDPOINT_AUTHMODE }}
-  #   - name: deploy model to endpoint dev - blue deployment
-  #     run:  |              
-  #             az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
-  #     env:
-  #         DEPLOYMENTNAME: ${{ vars.REG_MODEL_NAME }}
-  #         MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
-  #         DEPLOYMENTPATH: ${{ vars.DEPLOYMENT_PATH }}
-  #         DEPLOYMENTINSTANCE: ${{ vars.DEPLOYMENT_INSTANCE }}    
-  #         DEPLOYMENTINSTANCECOUNT: ${{ vars.DEPLOYMENT_INSTANCE_COUNT }}
+    - name: Register model in dev      
+      run: |
+        echo "runId :${{ env.RUN_ID }}"
+        az ml model create --name ${{vars.REG_MODEL_NAME}} --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+    - name: download model
+      run: |
+          az ml model download --name ${{vars.REG_MODEL_NAME}} --version ${{ vars.DEPLOY_REG_MODEL_VERSION }} --download-path  downloadmodel --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
+    - name: Create endpoint dev
+      run:  |
+              echo "check endpoint exist"
+              ENDPOINT_EXISTS=$(az ml online-endpoint list --resource-group ${{ vars.RGNAME }} --workspace-name ${{ vars.MLWORKSPACE }} --query "[?name=='${{ vars.ENDPOINT_NAME }}'].name" -o tsv)
+              echo "endpoint staus : $ENDPOINT_EXISTS"
+              if [ -z "$ENDPOINT_EXISTS" ]; then
+                echo "Endpoint ${{ vars.ENDPOINT_NAME }} doesn't exist. Creating endpoint..."
+                az ml online-endpoint create -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+              else
+                echo "Endpoint ${{ vars.ENDPOINT_NAME }} exists. Updating endpoint..."
+                az ml online-endpoint update --name $ENDPOINT_NAME -f ./deployments/endpoint.yml --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+              fi
+              sleep 60
+      env:
+          ENDPOINTNAME: ${{ vars.ENDPOINT_NAME }}
+          AUTHMODE: ${{ vars.ENDPOINT_AUTHMODE }}
+    - name: deploy model to endpoint dev - blue deployment
+      run:  |              
+              az ml online-deployment create --name ${{vars.DEPLOYMENT_NAME}} -f ./deployments/deployment.yml --endpoint-name ${{vars.ENDPOINT_NAME}} --resource-group ${{vars.RGNAME}}  --workspace-name ${{vars.MLWORKSPACE}} --all-traffic
+      env:
+          DEPLOYMENTNAME: ${{ vars.REG_MODEL_NAME }}
+          MODELVERSION: ${{ vars.DEPLOY_REG_MODEL_VERSION }}
+          DEPLOYMENTPATH: ${{ vars.DEPLOYMENT_PATH }}
+          DEPLOYMENTINSTANCE: ${{ vars.DEPLOYMENT_INSTANCE }}    
+          DEPLOYMENTINSTANCECOUNT: ${{ vars.DEPLOYMENT_INSTANCE_COUNT }}
   production:
     runs-on: ubuntu-latest
-    # needs: experiment
+    needs: experiment
     environment:
         name: prd
     steps:
