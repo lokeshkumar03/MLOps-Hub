@@ -49,8 +49,8 @@ jobs:
 
     - name: Dataset.yml- Replace dataset.yml with env variable
       run: |
-          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g"; \           
-          "s#{{DBVERSION}}#${{ vars.DATASET_VERSION }}#g;" \
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g; \           
+          "s#{{DBVERSION}}#${{ vars.DATASET_VERSION }}#g; \
           "s#{{DATASET_PATH}}#${{ vars.DATASET_PATH }}#g" \
           ./deployments/dataset-template.yml > ./deployments/dataset.yml
     - name: endpoint.yml - Replace with env variable
@@ -154,8 +154,8 @@ jobs:
 
     - name: Dataset.yml- Replace dataset.yml with env variable
       run: |
-          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g"; \           
-          "s#{{DBVERSION}}#${{ vars.DATASET_VERSION }}#g;" \
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g; \           
+          "s#{{DBVERSION}}#${{ vars.DATASET_VERSION }}#g; \
           "s#{{DATASET_PATH}}#${{ vars.DATASET_PATH }}#g" \
           ./deployments/dataset-template.yml > ./deployments/dataset-prd.yml
     - name: endpoint.yml - Replace with env variable
