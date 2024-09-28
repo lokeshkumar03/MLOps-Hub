@@ -1,5 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/asset.schema.json
 name: {{DATASETNAME}}
 version: {{DBVERSION}}
-path: production/data
+path: ../production/data
 description: Dataset pointing to diabetes-prd CSV in the repo. Data will be uploaded to default datastore.
