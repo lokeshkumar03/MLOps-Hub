@@ -1,0 +1,8 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+model:
+  name: {{DEPLOYMENTNAME}}
+  version: {{MODELVERSION}}
+  path: {{DEPLOYMENTPATH}}
+  type: mlflow_model
+instance_type: {{DEPLOYMENTINSTANCE}}
+instance_count: {{DEPLOYMENTINSTANCECOUNT}}
