@@ -57,7 +57,7 @@ jobs:
             # cat ./deployments/endpoint.yml
     - name: Deployment.yml - Replace with env variable
       run: |
-            sed "s/{{DEPLOYMENTNAME}}/${{ vars.REG_MODEL_NAME }}/g; \
+            sed "s/{{DEPLOYMENTNAME}}/${{ vars.DEPLOYMENT_NAME }}/g; \
             s#{{MODELVERSION}}#${{ vars.DEPLOY_REG_MODEL_VERSION }}#g; \
             s#{{DEPLOYMENTPATH}}#${{ vars.DEPLOYMENT_PATH }}#g; \
             s#{{DEPLOYMENTINSTANCE}}#${{ vars.DEPLOYMENT_INSTANCE }}#g; \
@@ -81,7 +81,7 @@ jobs:
           az ml data create --file ./deployments/dataset.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
         fi        
       env:
-          DATASET_NAME: ${{ vars.DATASETNAME }}
+          DATASET_NAME: ${{ vars.DATASETNAME }}  
           DBVERSION: ${{vars.DATASET_VERSION}}   
     - name: Run training job for dev
       run: |
@@ -100,10 +100,10 @@ jobs:
             fi
           done
 
-    # - name: Register model in dev      
-    #   run: |
-    #     echo "runId :${{ env.RUN_ID }}"
-    #     az ml model create --name ${{vars.REG_MODEL_NAME}} --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+    - name: Register model in dev      
+      run: |
+        echo "runId :${{ env.RUN_ID }}"
+        az ml model create --name ${{vars.REG_MODEL_NAME}} --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
     - name: download model
       run: |
           az ml model download --name ${{vars.REG_MODEL_NAME}} --version ${{ vars.DEPLOY_REG_MODEL_VERSION }} --download-path  downloadmodel --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
