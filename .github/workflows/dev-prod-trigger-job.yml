@@ -183,7 +183,7 @@ jobs:
           #   echo "Dataset will be created"
           #   az ml data create --file ./deployments/dataset-prd.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
           # fi 
-          az ml data create --file ./deployments/dataset-prd.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}       
+          az ml data create --file ./dataset-prd.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}       
       env:
             DATASET_NAME: ${{ vars.DATASETNAME }}  
             DBVERSION: ${{vars.DATASET_VERSION}}   
