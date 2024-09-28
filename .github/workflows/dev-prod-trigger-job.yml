@@ -100,10 +100,10 @@ jobs:
             fi
           done
 
-    - name: Register model in dev      
-      run: |
-        echo "runId :${{ env.RUN_ID }}"
-        az ml model create --name ${{vars.REG_MODEL_NAME}} --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
+    # - name: Register model in dev      
+    #   run: |
+    #     echo "runId :${{ env.RUN_ID }}"
+    #     az ml model create --name ${{vars.REG_MODEL_NAME}} --path runs:/${{ env.RUN_ID }}/model  --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}}
     - name: download model
       run: |
           az ml model download --name ${{vars.REG_MODEL_NAME}} --version ${{ vars.DEPLOY_REG_MODEL_VERSION }} --download-path  downloadmodel --resource-group ${{vars.RGNAME}} --workspace-name ${{vars.MLWORKSPACE}} 
