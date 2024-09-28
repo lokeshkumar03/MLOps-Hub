@@ -49,10 +49,8 @@ jobs:
 
     - name: Dataset.yml- Replace dataset.yml with env variable
       run: |
-          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g; \           
-          s#{{DBVERSION}}#${{ vars.DATASET_VERSION }}#g; \
-          s#{{DATASET_PATH}}#${{ vars.DATASET_PATH }}#g" \
-          ./deployments/dataset-template.yml > ./deployments/dataset.yml
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-template.yml | \
+          sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset.yml
     - name: endpoint.yml - Replace with env variable
       run: |
             sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g; s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
@@ -154,10 +152,8 @@ jobs:
 
     - name: Dataset.yml- Replace dataset.yml with env variable
       run: |
-          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g; \           
-          s#{{DBVERSION}}#${{ vars.DATASET_VERSION }}#g; \
-          s#{{DATASET_PATH}}#${{ vars.DATASET_PATH }}#g" \
-          ./deployments/dataset-template.yml > ./deployments/dataset-prd.yml
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-prd-template.yml | \
+          sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset-prd.yml
     - name: endpoint.yml - Replace with env variable
       run: |
             sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g; s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
