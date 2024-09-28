@@ -175,14 +175,14 @@ jobs:
           echo "${{vars.DATASETNAME}}-${{vars.DATASET_VERSION}}"
           dataset_name=${{vars.DATASETNAME}}
           dataset_version=${{vars.DATASET_VERSION}}
-          output=$(az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table)
-          if echo "$output" | grep -q "$dataset_name" && echo "$output" | grep "$dataset_name" | grep -q "$dataset_version"; then
-            echo "Dataset '$dataset_name' with version '$dataset_version' exists."
-          else
-            echo "Dataset '$dataset_name' with version '$dataset_version' does not exist."
-            echo "Dataset will be created"
-            az ml data create --file ./deployments/dataset-prd.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
-          fi 
+          # output=$(az ml data list --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}} --output table)
+          # if echo "$output" | grep -q "$dataset_name" && echo "$output" | grep "$dataset_name" | grep -q "$dataset_version"; then
+          #   echo "Dataset '$dataset_name' with version '$dataset_version' exists."
+          # else
+          #   echo "Dataset '$dataset_name' with version '$dataset_version' does not exist."
+          #   echo "Dataset will be created"
+          #   az ml data create --file ./deployments/dataset-prd.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
+          # fi 
           az ml data create --file ./deployments/dataset-prd.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}       
       env:
             DATASET_NAME: ${{ vars.DATASETNAME }}  
