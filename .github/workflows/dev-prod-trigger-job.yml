@@ -152,8 +152,8 @@ jobs:
 
     - name: Dataset.yml- Replace dataset.yml with env variable
       run: |
-          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./deployments/dataset-prd-template.yml | \
-          sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./deployments/dataset-prd.yml
+          sed "s/{{DATASETNAME}}/${{ vars.DATASETNAME }}/g" ./dataset-prd-template.yml | \
+          sed "s/{{DBVERSION}}/${{ vars.DATASET_VERSION }}/g" > ./dataset-prd.yml
     - name: endpoint.yml - Replace with env variable
       run: |
             sed "s/{{ENDPOINTNAME}}/${{ vars.ENDPOINT_NAME }}/g; s/{{AUTHMODE}}/${{ vars.ENDPOINT_AUTHMODE }}/g" ./deployments/endpoint-template.yml > ./deployments/endpoint.yml
@@ -182,7 +182,8 @@ jobs:
             echo "Dataset '$dataset_name' with version '$dataset_version' does not exist."
             echo "Dataset will be created"
             az ml data create --file ./deployments/dataset-prd.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}
-          fi        
+          fi 
+          az ml data create --file ./deployments/dataset-prd.yml --workspace-name ${{vars.MLWORKSPACE}} --resource-group ${{vars.RGNAME}}       
       env:
             DATASET_NAME: ${{ vars.DATASETNAME }}  
             DBVERSION: ${{vars.DATASET_VERSION}}   
